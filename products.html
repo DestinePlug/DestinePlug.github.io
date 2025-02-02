@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destine Plug - Products</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .header {
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .logo {
+            max-height: 200px;
+            margin-bottom: 15px;
+        }
+
+        nav {
+            padding: 15px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            margin: 10px 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #1e90ff;
+        }
+
+        .products-container {
+            padding: 50px 5%;
+            min-height: 100vh;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 0 auto;
+            max-width: 1400px;
+        }
+
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .price {
+            color: #1e90ff;
+            font-size: 1.2em;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #1e90ff;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #0077cc;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 40px 0;
+        }
+
+        .page-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .page-btn.active {
+            background: #1e90ff;
+            color: #fff;
+            border-color: #1e90ff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%; /* Adjusted for smaller screens */
+            width: 500px; /* Default width for larger screens */
+            text-align: center;
+            position: relative;
+            overflow-y: auto; /* Enable scrolling for small screens */
+            max-height: 90vh; /* Limit height to 90% of viewport height */
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto; /* Make image height responsive */
+            max-height: 300px; /* Limit image height */
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .modal-content .price {
+            font-size: 1.2em;
+            color: #1e90ff;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .close-btn:hover {
+            color: #1e90ff;
+        }
+
+        /* Responsive Adjustments for Modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%; /* Full width on smaller screens */
+                padding: 15px;
+            }
+
+            .modal-content img {
+                max-height: 200px; /* Smaller image height for smaller screens */
+            }
+
+            .modal-content h3 {
+                font-size: 1.2em; /* Smaller font size for headings */
+            }
+
+            .modal-content p {
+                font-size: 0.9em; /* Smaller font size for descriptions */
+            }
+
+            .modal-content .price {
+                font-size: 1em; /* Smaller font size for price */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%; /* Almost full width on very small screens */
+                padding: 10px;
+            }
+
+            .modal-content img {
+                max-height: 150px; /* Even smaller image height for mobile */
+            }
+
+            .modal-content h3 {
+                font-size: 1em; /* Smaller font size for headings */
+            }
+
+            .modal-content p {
+                font-size: 0.8em; /* Smaller font size for descriptions */
+            }
+
+            .modal-content .price {
+                font-size: 0.9em; /* Smaller font size for price */
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .logo {
+                max-height: 150px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .logo {
+                max-height: 120px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .product-image {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                max-height: 100px;
+            }
+
+            nav a {
+                margin: 10px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 20px;
+            }
+
+            .product-image {
+                height: 150px;
+            }
+
+            .product-info {
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 8px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                max-height: 80px;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav a {
+                margin: 5px 0;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 15px;
+            }
+
+            .product-image {
+                height: 120px;
+            }
+
+            .product-info {
+                padding: 10px;
+            }
+
+            .btn {
+                padding: 6px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="/067 453 9254 (7).png" alt="Destine Plug Logo" class="logo">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="/About.html">About Us</a>
+        </nav>
+    </div>
+
+    <div class="products-container">
+        <div class="product-grid" id="productGrid"></div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <img id="modalImage" src="" alt="Product Image">
+            <h3 id="modalName"></h3>
+            <p id="modalDescription"></p>
+            <p class="price" id="modalPrice"></p>
+        </div>
+    </div>
+
+    <script>
+        // Actual product data with unique names, prices, descriptions, and images
+        const products = [
+            {
+                id: 1,
+                name: "BerryBerry",
+                price: "R80",
+                description: "A floral fragrance with a blend of jasmine and rose.",
+                image: "/motala /40ml-BerryBerry-Bottle.jpg"
+            },
+            {
+                id: 2,
+                name: "B man",
+                price: "R80",
+                description: "A bold and addictive scent with notes of coffee and vanilla.",
+                image: "/motala /40ml-BEditionMan-Bottle.jpg"
+            },
+            {
+                id: 3,
+                name: "ClubDeAbsolu",
+                price: "R80",
+                description: "A fresh and spicy fragrance with bergamot and ambroxan.",
+                image: "/motala /40ml-ClubDeAbsolu-Bottle.jpg"
+            },
+            {
+                id: 4,
+                name: "Flawless",
+                price: "R80",
+                description: "A timeless classic with floral and aldehydic notes.",
+                image: "/motala /40ml-FlawlessClassic-Bottle.jpg"
+            },
+            {
+                id: 5,
+                name: "OudDGreat",
+                price: "R80",
+                description: "A luxurious scent with notes of ylang-ylang and Damascus rose.",
+                image: "/motala /40ml-OudDGreat-Bottle.jpg"
+            },
+            {
+                id: 6,
+                name: "Face mask and Lipgloss",
+                price: "R30",
+                description: "Any 2 until 05 feb",
+                image: "/motala /20250129_161036.jpg"
+            },
+            {
+                id: 7,
+                name: "Lipgloss",
+                price: "R20",
+                description: "Available in six different flavours strawberry,cherry,lemon,grape and honey peach",
+                image: "/motala /8AA908AB-8054-4327-866B-93875F54706F.png"
+            },
+            {
+                id: 8,
+                name: "WildIntense",
+                price: "R80",
+                description: "A crisp and refreshing scent with Sicilian cedar and apple.",
+                image: "/motala /40ml-WildIntense-Bottle.jpg"
+            },
+            {
+                id: 9,
+                name: "Blue J",
+                price: "R120",
+                description: "A modern oriental fragrance with jasmine and patchouli.",
+                image: "/motala /Blue J.jpg"
+            },
+            {
+                id: 10,
+                name: "Gold Oud",
+                price: "R120",
+                description: "A floral explosion with patchouli and vanilla.",
+                image: "/motala /GOLD-OUD-CLASSIC-BOTTLE-1-scaled-1.jpg"
+            },
+            {
+                id: 11,
+                name: "Pearl and Melon",
+                price: "R120",
+                description: "A gourmand fragrance with chocolate and caramel notes.",
+                image: "/motala /Pearl and melon.jpg"
+            },
+            {
+                id: 12,
+                name: "To my Boy",
+                price: "R120",
+                description: "A woody aromatic fragrance with incense and cedar.",
+                image: "/motala /To my boy.jpg"
+            },
+            {
+                id: 13,
+                name: "Coconut Gel",
+                price: "R530",
+                description: "A seductive scent with tuberose and cocoa.",
+                image: "/motala /Screenshot_20250202_074350_Google.jpg"
+            },
+            {
+                id: 14,
+                name: "Real Aloe Vera",
+                price: "R20",
+                description: "A bold and spicy fragrance with cinnamon and leather.",
+                image: "/motala /U54a401ec742042b1af6129ca6222adaf1.png_720x720q50.png"
+            },
+            {
+                id: 15,
+                name: "Real Olive",
+                price: "R20",
+                description: "A fruity and smoky fragrance with pineapple and birch.",
+                image: "/motala /Ud44703f6bdb54576b79e95ee431c65c9Q.png_720x720q50.png"
+            },
+            {
+                id: 16,
+                name: "StayRealSheaButterEssenceMask2",
+                price: "R480",
+                description: "A floral fragrance with lavender and orange blossom.",
+                image: "/motala /FarmStayRealSheaButterEssenceMask2.jpg"
+            },
+            {
+                id: 17,
+                name: "Miss Dior",
+                price: "R550",
+                description: "A floral fragrance with rose and patchouli.",
+                image: "/Products1/oud-mood-silver.jpg"
+            },
+            {
+                id: 18,
+                name: "Euphoria",
+                price: "R420",
+                description: "A sensual fragrance with pomegranate and lotus.",
+                image: "/Products1/oud-mood-silver.jpg"
+            },
+            {
+                id: 19,
+                name: "Daisy",
+                price: "R390",
+                description: "A fresh and floral fragrance with violet and strawberry.",
+                image: "daisy.jpg"
+            },
+            {
+                id: 20,
+                name: "Versace Eros",
+                price: "R460",
+                description: "A fresh and spicy fragrance with mint and green apple.",
+                image: "versace-eros.jpg"
+            },
+            {
+                id: 21,
+                name: "MOTALA",
+                price: "R420",
+                description: "A unique fragrance with exotic spices and amber.",
+                image: "euphoria.jpg"
+            },
+            {
+                id: 22,
+                name: "SILVER SENSE",
+                price: "R390",
+                description: "A fresh and woody fragrance with citrus and musk.",
+                image: "daisy.jpg"
+            },
+            {
+                id: 23,
+                name: "ARYA",
+                price: "R460",
+                description: "A floral and fruity fragrance with peach and jasmine.",
+                image: "versace-eros.jpg"
+            },
+        ];
+
+        // Pagination settings
+        const itemsPerPage = 16;
+        let currentPage = 1;
+
+        function displayProducts(page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = products.slice(startIndex, endIndex);
+
+            const productGrid = document.getElementById('productGrid');
+            productGrid.innerHTML = paginatedProducts.map(product => `
+                <div class="product-card" onclick="openModal(${product.id})">
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="price">${product.price}</p>
+                        <button class="btn">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupPagination() {
+            const pageCount = Math.ceil(products.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            pagination.innerHTML = Array.from({length: pageCount}, (_, i) => `
+                <button class="page-btn ${i + 1 === currentPage ? 'active' : ''}" 
+                        onclick="changePage(${i + 1})">
+                    ${i + 1}
+                </button>
+            `).join('');
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayProducts(currentPage);
+            setupPagination();
+        }
+
+        // Modal functionality
+        function openModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('modalImage').src = product.image;
+                document.getElementById('modalName').innerText = product.name;
+                document.getElementById('modalDescription').innerText = product.description;
+                document.getElementById('modalPrice').innerText = product.price;
+                document.getElementById('productModal').style.display = 'flex';
+            }
+        }
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('productModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initial load
+        displayProducts(currentPage);
+        setupPagination();
+    </script>
+</body>
+</html>
