@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Destine Plug - Products</title>
     <style>
+        /* Your existing CSS styles */
         * {
             margin: 0;
             padding: 0;
@@ -41,22 +42,6 @@
             color: #1e90ff; /* Blue hover color */
         }
 
-        nav {
-            padding: 15px;
-            background: #fff;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #333;
-            margin: 0 20px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #1e90ff;
-        }
         .products-container {
             padding: 50px 5%;
             min-height: 100vh;
@@ -205,132 +190,190 @@
             color: #1e90ff;
         }
 
-        /* Responsive Adjustments for Modal */
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 90%; /* Full width on smaller screens */
-                padding: 15px;
-            }
-
-            .modal-content img {
-                max-height: 200px; /* Smaller image height for smaller screens */
-            }
-
-            .modal-content h3 {
-                font-size: 1.2em; /* Smaller font size for headings */
-            }
-
-            .modal-content p {
-                font-size: 0.9em; /* Smaller font size for descriptions */
-            }
-
-            .modal-content .price {
-                font-size: 1em; /* Smaller font size for price */
-            }
+        /* New Product Block Styles */
+        .product-block__inner {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        @media (max-width: 480px) {
-            .modal-content {
-                width: 95%; /* Almost full width on very small screens */
-                padding: 10px;
-            }
+        .product-block__inner:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 
-            .modal-content img {
-                max-height: 150px; /* Even smaller image height for mobile */
-            }
+        .image--shape-1 {
+            position: relative;
+        }
 
-            .modal-content h3 {
-                font-size: 1em; /* Smaller font size for headings */
-            }
+        .image__primary {
+            position: relative;
+        }
 
-            .modal-content p {
-                font-size: 0.8em; /* Smaller font size for descriptions */
-            }
+        .rimage-outer-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
 
-            .modal-content .price {
-                font-size: 0.9em; /* Smaller font size for price */
-            }
+        .rimage-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-top: 100%;
+        }
+
+        .rimage__image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-label--sale {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4757;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .product-block__title-price {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .product-block__title-price .title {
+            font-size: 1.1em;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .price.on-sale {
+            margin-top: 10px;
+        }
+
+        .price.on-sale .amount {
+            color: #1e90ff;
+            font-weight: bold;
+        }
+
+        .price.on-sale del {
+            color: #888;
+            margin-left: 5px;
+        }
+
+        .product-form--mini {
+            padding: 0 15px 15px;
+        }
+
+        .mini-product-purchase-form {
+            display: flex;
+            justify-content: center;
+        }
+
+        .qty-adjuster-container {
+            padding: 0 15px 15px;
+        }
+
+        .qty-adjuster--ajax {
+            display: flex;
+            justify-content: center;
+        }
+
+        .qty-adjuster__inner {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .qty-adjuster__down,
+        .qty-adjuster__up {
+            background: #f8f8f8;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .qty-adjuster__value {
+            width: 40px;
+            text-align: center;
+            border: none;
+            outline: none;
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 1200px) {
-            .logo {
-                max-height: 150px;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .logo {
-                max-height: 120px;
-            }
-
+        @media (max-width: 768px) {
             .product-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .product-image {
-                height: 200px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .logo {
-                max-height: 100px;
-            }
-
-            nav a {
-                margin: 10px;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 20px;
-            }
-
-            .product-image {
-                height: 150px;
-            }
-
-            .product-info {
-                padding: 15px;
-            }
-
-            .btn {
-                padding: 8px 20px;
             }
         }
 
         @media (max-width: 480px) {
-            .logo {
-                max-height: 80px;
-            }
-
-            nav {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            nav a {
-                margin: 5px 0;
-            }
-
             .product-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
+        }
 
-            .product-image {
-                height: 120px;
-            }
+        /* Cart Styles */
+        .cart-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
 
-            .product-info {
-                padding: 10px;
-            }
+        .cart-container h2 {
+            margin-bottom: 15px;
+        }
 
-            .btn {
-                padding: 6px 15px;
-                font-size: 0.9em;
-            }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+
+        .cart-item div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item span {
+            font-size: 0.9em;
+        }
+
+        #sendToWhatsApp {
+            background: #25D366;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        #sendToWhatsApp:hover {
+            background: #1da851;
         }
     </style>
 </head>
@@ -342,6 +385,16 @@
             <a href="products.html">Products</a>
             <a href="/About.html">About Us</a>
         </nav>
+    </div>
+
+    <!-- Cart Section -->
+    <div class="cart-container">
+        <h2>Your Cart</h2>
+        <div id="cartItems" style="margin: 15px 0;"></div>
+        <p><strong>Total: </strong><span id="cartTotal">R0</span></p>
+        <button id="sendToWhatsApp" class="btn" style="background: #25D366; margin-top: 15px;">
+            Send Order via WhatsApp
+        </button>
     </div>
 
     <div class="products-container">
@@ -368,7 +421,7 @@
                 name: "BerryBerry",
                 price: "R80",
                 description: "A floral fragrance with a blend of jasmine and rose.",
-                image: "/40ml-BerryBerry-Bottle.jpg"
+                image: "/motala /GOLD-OUD-CLASSIC-BOTTLE-1-scaled-1.jpg"
             },
             {
                 id: 2,
@@ -382,7 +435,7 @@
                 name: "ClubDeAbsolu",
                 price: "R80",
                 description: "A fresh and spicy fragrance with bergamot and ambroxan.",
-                image: "/40ml-ClubDeAbsolu-Bottle.jpg"
+                image: "/motala /U54a401ec742042b1af6129ca6222adaf1.png_720x720q50.png"
             },
             {
                 id: 4,
@@ -537,12 +590,50 @@
 
             const productGrid = document.getElementById('productGrid');
             productGrid.innerHTML = paginatedProducts.map(product => `
-                <div class="product-card" onclick="openModal(${product.id})">
-                    <img src="${product.image}" alt="${product.name}" class="product-image">
-                    <div class="product-info">
-                        <h3>${product.name}</h3>
-                        <p class="price">${product.price}</p>
-                        <button class="btn">Add to Cart</button>
+                <div class="product-block__inner">
+                    <div class="image image--shape-1">
+                        <div class="inner">
+                            <a href="#" onclick="openModal(${product.id}); return false;">
+                                <div class="image__primary">
+                                    <div class="rimage-outer-wrapper">
+                                        <div class="rimage-wrapper" style="padding-top:100%">
+                                            <img class="rimage__image" src="${product.image}" alt="${product.name}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <span class="product-label product-label--sale">
+                            <span>Save 10%</span>
+                        </span>
+                    </div>
+                    
+                    <div class="product-block__title-price">
+                        <a class="title" href="#">
+                            ${product.name}
+                        </a>
+                        <div class="price on-sale">
+                            <span class="amount theme-money">${product.price}</span>
+                            <del><span class="theme-money">R249</span></del>
+                        </div>
+                    </div>
+
+                    <div class="product-form product-form--mini">
+                        <form class="mini-product-purchase-form" onsubmit="addToCart(event, ${product.id})">
+                            <button type="submit" class="btn product-add">
+                                <span class="button-text">Add to cart</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="qty-adjuster-container">
+                        <div class="qty-adjuster qty-adjuster--ajax">
+                            <div class="qty-adjuster__inner">
+                                <button class="btn qty-adjuster__down">−</button>
+                                <input class="qty-adjuster__value" type="text" value="1">
+                                <button class="btn qty-adjuster__up">+</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -594,6 +685,98 @@
         // Initial load
         displayProducts(currentPage);
         setupPagination();
+
+        // Cart functionality
+        let cart = [];
+
+        function addToCart(event, productId) {
+            event.preventDefault();
+            const form = event.target.closest('form');
+            const quantityInput = form.parentElement.parentElement.querySelector('.qty-adjuster__value');
+            const quantity = parseInt(quantityInput.value) || 1;
+
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Clean price value (remove 'R' and commas)
+            const price = parseFloat(product.price.replace(/[^0-9.]/g, ''));
+
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: price,
+                    quantity: quantity,
+                    image: product.image
+                });
+            }
+
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartItems.innerHTML = cart.length > 0 
+                ? cart.map(item => `
+                    <div class="cart-item" style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: cover;">
+                            <span>${item.name}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span>${item.quantity} x R${item.price.toFixed(2)}</span>
+                            <span>R${(item.quantity * item.price).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('')
+                : '<p>Your cart is empty</p>';
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = `R${total.toFixed(2)}`;
+        }
+
+        // WhatsApp integration
+        document.getElementById('sendToWhatsApp').addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const message = cart.map(item => 
+                `*${item.name}*%0A` +
+                `Quantity: ${item.quantity}%0A` +
+                `Price: R${item.price.toFixed(2)} each%0A` +
+                `Total: R${(item.quantity * item.price).toFixed(2)}%0A%0A`
+            ).join('');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const whatsappMessage = encodeURIComponent(
+                `Hello Destine Plug!%0A%0A` +
+                `I would like to order:%0A%0A${message}` +
+                `*Grand Total: R${total.toFixed(2)}*%0A%0A` +
+                `Please confirm my order. Thank you!`
+            );
+
+            window.open(`https://wa.me/27674539254?text=${whatsappMessage}`, '_blank');
+        });
+
+        // Add quantity adjuster functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('qty-adjuster__down')) {
+                const input = e.target.parentElement.querySelector('.qty-adjuster__value');
+                input.value = Math.max(1, parseInt(input.value) - 1);
+            }
+            
+            if (e.target.classList.contains('qty-adjuster__up')) {
+                const input = e.target.parentElement.querySelector('.qty-adjuster__value');
+                input.value = parseInt(input.value) + 1;
+            }
+        });
     </script>
 </body>
 </html>
