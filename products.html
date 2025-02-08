@@ -767,21 +767,21 @@
             }
 
             const message = cart.map(item =>
-                `*${item.name}*%0A` +
-                `Quantity: ${item.quantity}%0A` +
-                `Price: R${item.price.toFixed(2)} each%0A` +
-                `Total: R${(item.quantity * item.price).toFixed(2)}%0A%0A`
+                `*${item.name}*\n` +
+                `Quantity: ${item.quantity}\n` +
+                `Price: R${item.price.toFixed(2)} each\n` +
+                `Total: R${(item.quantity * item.price).toFixed(2)}\n\n`
             ).join('');
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const whatsappMessage = encodeURIComponent(
-                `Hello Destine Plug!%0A%0A` +
-                `I would like to order:%0A%0A${message}` +
-                `*Grand Total: R${total.toFixed(2)}*%0A%0A` +
-                `Please confirm my order. Thank you!`
-            );
+            const whatsappMessage = 
+                `Hello Destine Plug!\n\n` +
+                `I would like to order:\n\n${message}` +
+                `*Grand Total: R${total.toFixed(2)}*\n\n` +
+                `Please confirm my order. Thank you!`;
 
-            window.open(`https://wa.me/27674539254?text=${whatsappMessage}`, '_blank');
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            window.open(`https://wa.me/27674539254?text=${encodedMessage}`, '_blank');
         });
 
         // Add quantity adjuster functionality
