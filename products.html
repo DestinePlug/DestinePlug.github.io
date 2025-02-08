@@ -18,6 +18,7 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
+            position: relative;
         }
 
         .logo {
@@ -42,9 +43,57 @@
             color: #1e90ff; /* Blue hover color */
         }
 
+        .search-container {
+            position: absolute;
+            top: 20px;
+            right: 100px; /* Adjust based on cart icon position */
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            width: 200px;
+            transition: width 0.3s;
+        }
+
+        .search-container input[type="text"]:focus {
+            width: 250px;
+        }
+
+        .search-container i {
+            margin-left: 10px;
+            color: #1e90ff;
+            cursor: pointer;
+        }
+
         .products-container {
             padding: 50px 5%;
             min-height: 100vh;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .filter-container i {
+            margin-right: 10px;
+            color: #1e90ff;
+        }
+
+        .filter-container select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+            outline: none;
         }
 
         .product-grid {
@@ -323,19 +372,56 @@
             }
         }
 
-        /* Cart Styles */
-        .cart-container {
+        /* Cart Icon and Dropdown */
+        .cart-icon {
             position: fixed;
             top: 20px;
+            right: 20px;
+            background: #48d71f;
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-icon i {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .cart-icon .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 12px;
+        }
+
+        .cart-dropdown {
+            display: none;
+            position: fixed;
+            top: 80px;
             right: 20px;
             background: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            width: 300px;
         }
 
-        .cart-container h2 {
+        .cart-dropdown.active {
+            display: block;
+        }
+
+        .cart-dropdown h2 {
             margin-bottom: 15px;
         }
 
@@ -362,6 +448,24 @@
             font-size: 0.9em;
         }
 
+        .cart-item .qty-adjuster {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cart-item .qty-adjuster button {
+            background: #f8f8f8;
+            border: none;
+            padding: 2px 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .cart-item .qty-adjuster button:hover {
+            background: #ddd;
+        }
+
         #sendToWhatsApp {
             background: #25D366;
             color: #fff;
@@ -370,6 +474,7 @@
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
+            width: 100%;
         }
 
         #sendToWhatsApp:hover {
@@ -385,19 +490,38 @@
             <a href="products.html">Products</a>
             <a href="/About.html">About Us</a>
         </nav>
+        <!-- Search Container -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
+            <i class="fas fa-search"></i>
+        </div>
     </div>
 
-    <!-- Cart Section -->
-    <div class="cart-container">
+    <!-- Cart Icon -->
+    <div class="cart-icon" onclick="toggleCartDropdown()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Cart Dropdown -->
+    <div class="cart-dropdown" id="cartDropdown">
         <h2>Your Cart</h2>
         <div id="cartItems" style="margin: 15px 0;"></div>
         <p><strong>Total: </strong><span id="cartTotal">R0</span></p>
-        <button id="sendToWhatsApp" class="btn" style="background: #25D366; margin-top: 15px;">
+        <button id="sendToWhatsApp" class="btn">
             Send Order via WhatsApp
         </button>
     </div>
 
     <div class="products-container">
+        <div class="filter-container">
+            <i class="fas fa-filter"></i>
+            <select id="sortFilter" onchange="sortProducts()">
+                <option value="default">Sort by</option>
+                <option value="lowToHigh">Price: Low to High</option>
+                <option value="highToLow">Price: High to Low</option>
+            </select>
+        </div>
         <div class="product-grid" id="productGrid"></div>
         <div class="pagination" id="pagination"></div>
     </div>
@@ -415,7 +539,7 @@
 
     <script>
         // Actual product data with unique names, prices, descriptions, and images
-        const products = [
+        let products = [
             {
                 id: 1,
                 name: "Nano Machine",
@@ -433,123 +557,6 @@
                 saleAmount: "20%",
                 description: "",
                 image: "/40ml-BerryBerry-Bottle.jpg"
-            },
-            {
-                id: 3,
-                name: "B man",
-                price: "R80",
-                originalPrice: "R100",
-                saleAmount: "20%",
-                description: "",
-                image: "/40ml-BEditionMan-Bottle.jpg"
-            },
-            {
-                id: 4,
-                name: "ClubDeAbsolu",
-                price: "R80",
-                originalPrice: "R100",
-                saleAmount: "20%",
-                description: "",
-                image: "/40ml-ClubDeAbsolu-Bottle.jpg"
-            },
-            {
-                id: 5,
-                name: "Flawless",
-                price: "R80",
-                originalPrice: "R100",
-                saleAmount: "20%",
-                description: "",
-                image: "/40ml-FlawlessClassic-Bottle.jpg"
-            },
-            {
-                id: 6,
-                name: "OudDGreat",
-                price: "R80",
-                originalPrice: "R100",
-                saleAmount: "20%",
-                description: "",
-                image: "/40ml-OudDGreat-Bottle.jpg"
-            },
-            {
-                id: 7,
-                name: "Facemask & Lipgloss Combo",
-                price: "R30",
-                originalPrice: "R50",
-                saleAmount: "40%",
-                description: "Any 2 until 08 feb",
-                image: "/IMG-20250203-WA0010.jpg"
-            },
-            {
-                id: 8,
-                name: "Lipgloss",
-                price: "R20",
-                originalPrice: "R30",
-                saleAmount: "33%",
-                description: "Available in six different flavours strawberry,cherry,lemon,grape and honey peach",
-                image: "/8AA908AB-8054-4327-866B-93875F54706F.png"
-            },
-            {
-                id: 9,
-                name: "WildIntense",
-                price: "R80",
-                originalPrice: "R100",
-                saleAmount: "20%",
-                description: "",
-                image: "/40ml-WildIntense-Bottle.jpg"
-            },
-            {
-                id: 10,
-                name: "Blue J",
-                price: "R120",
-                originalPrice: "R150",
-                saleAmount: "20%",
-                description: "",
-                image: "/Blue J.jpg"
-            },
-            {
-                id: 11,
-                name: "Gold Oud",
-                price: "R120",
-                originalPrice: "R150",
-                saleAmount: "20%",
-                description: "",
-                image: "/GOLD-OUD-CLASSIC-BOTTLE-1-scaled-1.jpg"
-            },
-            {
-                id: 12,
-                name: "Pearl and Melon",
-                price: "R120",
-                originalPrice: "R150",
-                saleAmount: "20%",
-                description: "",
-                image: "/Pearl and melon.jpg"
-            },
-            {
-                id: 13,
-                name: "To my Boy",
-                price: "R120",
-                originalPrice: "R150",
-                saleAmount: "20%",
-                description: "",
-                image: "/To my boy.jpg"
-            },
-            {
-                id: 14,
-                name: "Coconut Gel",
-                price: "R20",
-                originalPrice: "R30",
-                saleAmount: "33%",
-                description: "",
-                image: "/Screenshot_20250202_074350_Google.jpg"
-            },
-            {
-                id: 15,
-                name: "Aloe Vera",
-                price: "R20",
-                originalPrice: "R30",
-                saleAmount: "33%",
-                description: "",
-                image: "/U54a401ec742042b1af6129ca6222adaf1.png_720x720q50.png"
             },
             {
                 id: 16,
@@ -575,10 +582,13 @@
         const itemsPerPage = 17;
         let currentPage = 1;
 
-        function displayProducts(page) {
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function displayProducts(page, productsToDisplay = products) {
             const startIndex = (page - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
-            const paginatedProducts = products.slice(startIndex, endIndex);
+            const paginatedProducts = productsToDisplay.slice(startIndex, endIndex);
 
             const productGrid = document.getElementById('productGrid');
             productGrid.innerHTML = paginatedProducts.map(product => `
@@ -631,8 +641,8 @@
             `).join('');
         }
 
-        function setupPagination() {
-            const pageCount = Math.ceil(products.length / itemsPerPage);
+        function setupPagination(productsToDisplay = products) {
+            const pageCount = Math.ceil(productsToDisplay.length / itemsPerPage);
             const pagination = document.getElementById('pagination');
             
             pagination.innerHTML = Array.from({length: pageCount}, (_, i) => `
@@ -677,10 +687,9 @@
         // Initial load
         displayProducts(currentPage);
         setupPagination();
+        updateCartDisplay();
 
         // Cart functionality
-        let cart = [];
-
         function addToCart(event, productId) {
             event.preventDefault();
             const form = event.target.closest('form');
@@ -706,30 +715,48 @@
                 });
             }
 
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateCartDisplay();
         }
 
         function updateCartDisplay() {
             const cartItems = document.getElementById('cartItems');
             const cartTotal = document.getElementById('cartTotal');
-            
-            cartItems.innerHTML = cart.length > 0 
-                ? cart.map(item => `
-                    <div class="cart-item" style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: cover;">
+            const cartCount = document.getElementById('cartCount');
+
+            cartItems.innerHTML = cart.length > 0 ?
+                cart.map(item => `
+                    <div class="cart-item">
+                        <div>
+                            <img src="${item.image}" alt="${item.name}">
                             <span>${item.name}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <span>${item.quantity} x R${item.price.toFixed(2)}</span>
-                            <span>R${(item.quantity * item.price).toFixed(2)}</span>
+                        <div class="qty-adjuster">
+                            <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">−</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">+</button>
                         </div>
+                        <span>R${(item.quantity * item.price).toFixed(2)}</span>
                     </div>
-                `).join('')
-                : '<p>Your cart is empty</p>';
+                `).join('') :
+                '<p>Your cart is empty</p>';
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             cartTotal.textContent = `R${total.toFixed(2)}`;
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function updateCartItemQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (newQuantity <= 0) {
+                    cart = cart.filter(item => item.id !== productId);
+                } else {
+                    item.quantity = newQuantity;
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+            }
         }
 
         // WhatsApp integration
@@ -739,7 +766,7 @@
                 return;
             }
 
-            const message = cart.map(item => 
+            const message = cart.map(item =>
                 `*${item.name}*%0A` +
                 `Quantity: ${item.quantity}%0A` +
                 `Price: R${item.price.toFixed(2)} each%0A` +
@@ -763,12 +790,44 @@
                 const input = e.target.parentElement.querySelector('.qty-adjuster__value');
                 input.value = Math.max(1, parseInt(input.value) - 1);
             }
-            
+
             if (e.target.classList.contains('qty-adjuster__up')) {
                 const input = e.target.parentElement.querySelector('.qty-adjuster__value');
                 input.value = parseInt(input.value) + 1;
             }
         });
+
+        // Sorting functionality
+        function sortProducts() {
+            const sortFilter = document.getElementById('sortFilter').value;
+            let sortedProducts = [...products];
+
+            if (sortFilter === 'lowToHigh') {
+                sortedProducts.sort((a, b) => parseFloat(a.price.replace(/[^0-9.]/g, '')) - parseFloat(b.price.replace(/[^0-9.]/g, '')));
+            } else if (sortFilter === 'highToLow') {
+                sortedProducts.sort((a, b) => parseFloat(b.price.replace(/[^0-9.]/g, '')) - parseFloat(a.price.replace(/[^0-9.]/g, '')));
+            }
+
+            // Update the displayed products
+            products = sortedProducts;
+            displayProducts(currentPage);
+        }
+
+        // Toggle cart dropdown
+        function toggleCartDropdown() {
+            const cartDropdown = document.getElementById('cartDropdown');
+            cartDropdown.classList.toggle('active');
+        }
+
+        // Search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm)
+            );
+            displayProducts(1, filteredProducts);
+            setupPagination(filteredProducts);
+        }
     </script>
 </body>
 </html>
