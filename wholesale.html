@@ -18,6 +18,7 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
+            position: relative;
         }
 
         .logo {
@@ -42,9 +43,57 @@
             color: #1e90ff; /* Blue hover color */
         }
 
+        .search-container {
+            position: absolute;
+            top: 20px;
+            right: 100px; /* Adjust based on cart icon position */
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            width: 200px;
+            transition: width 0.3s;
+        }
+
+        .search-container input[type="text"]:focus {
+            width: 250px;
+        }
+
+        .search-container i {
+            margin-left: 10px;
+            color: #1e90ff;
+            cursor: pointer;
+        }
+
         .products-container {
             padding: 50px 5%;
             min-height: 100vh;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .filter-container i {
+            margin-right: 10px;
+            color: #1e90ff;
+        }
+
+        .filter-container select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+            outline: none;
         }
 
         .product-grid {
@@ -323,19 +372,56 @@
             }
         }
 
-        /* Cart Styles */
-        .cart-container {
+        /* Cart Icon and Dropdown */
+        .cart-icon {
             position: fixed;
             top: 20px;
+            right: 20px;
+            background: #48d71f;
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-icon i {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .cart-icon .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 12px;
+        }
+
+        .cart-dropdown {
+            display: none;
+            position: fixed;
+            top: 80px;
             right: 20px;
             background: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            width: 300px;
         }
 
-        .cart-container h2 {
+        .cart-dropdown.active {
+            display: block;
+        }
+
+        .cart-dropdown h2 {
             margin-bottom: 15px;
         }
 
@@ -362,6 +448,24 @@
             font-size: 0.9em;
         }
 
+        .cart-item .qty-adjuster {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cart-item .qty-adjuster button {
+            background: #f8f8f8;
+            border: none;
+            padding: 2px 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .cart-item .qty-adjuster button:hover {
+            background: #ddd;
+        }
+
         #sendToWhatsApp {
             background: #25D366;
             color: #fff;
@@ -370,10 +474,25 @@
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
+            width: 100%;
         }
 
         #sendToWhatsApp:hover {
             background: #1da851;
+        }
+
+        /* Delivery Options */
+        .delivery-options {
+            margin-top: 15px;
+        }
+
+        .delivery-options label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .delivery-options input[type="radio"] {
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -382,22 +501,55 @@
         <img src="/067 453 9254 (7).png" alt="Destine Plug Logo" class="logo">
         <nav>
             <a href="index.html">Home</a>
-            <a href="wholesale.html">wholesale</a>
+            <a href="products.html">Products</a>
             <a href="/About.html">About Us</a>
         </nav>
+        <!-- Search Container -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()">
+            <i class="fas fa-search"></i>
+        </div>
     </div>
 
-    <!-- Cart Section -->
-    <div class="cart-container">
+    <!-- Cart Icon -->
+    <div class="cart-icon" onclick="toggleCartDropdown()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Cart Dropdown -->
+    <div class="cart-dropdown" id="cartDropdown">
         <h2>Your Cart</h2>
         <div id="cartItems" style="margin: 15px 0;"></div>
+        <p><strong>Subtotal: </strong><span id="cartSubtotal">R0</span></p>
+        
+        <!-- Delivery Options -->
+        <div class="delivery-options">
+            <label>
+                <input type="radio" name="delivery" value="60" onchange="updateTotal()">
+                R60 - 7-9 days via Paxi
+            </label>
+            <label>
+                <input type="radio" name="delivery" value="100" onchange="updateTotal()">
+                R100 - 3-5 days via Paxi
+            </label>
+        </div>
+
         <p><strong>Total: </strong><span id="cartTotal">R0</span></p>
-        <button id="sendToWhatsApp" class="btn" style="background: #25D366; margin-top: 15px;">
+        <button id="sendToWhatsApp" class="btn">
             Send Order via WhatsApp
         </button>
     </div>
 
     <div class="products-container">
+        <div class="filter-container">
+            <i class="fas fa-filter"></i>
+            <select id="sortFilter" onchange="sortProducts()">
+                <option value="default">Sort by</option>
+                <option value="lowToHigh">Price: Low to High</option>
+                <option value="highToLow">Price: High to Low</option>
+            </select>
+        </div>
         <div class="product-grid" id="productGrid"></div>
         <div class="pagination" id="pagination"></div>
     </div>
@@ -415,161 +567,165 @@
 
     <script>
         // Actual product data with unique names, prices, descriptions, and images
-        const products = [
-            {
-                id: 19,
-                name: "Aloe lipgloss 24PCS",
-                price: "R329",
-                originalPrice: "R380",
-                saleAmount: "14%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R329 for 24 pieces (R13.71 per piece). Recommended Selling Price: Sell each piece at R25(minimum). Total Revenue: 24 pieces x R25 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 24 pieces at R25 each. ",
-                image: "/Screenshot_20250204_193801_Samsung Internet.jpg"
-            },
-            {
-                id: 20,
-                name: "Aimond Oil 24PCS",
-                price: "R429",
-                originalPrice: "R480",
-                saleAmount: "11%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R420",
-                image: "/Screenshot_20250204_225007_Gallery.jpg"
-            },
-            {
-                id: 21,
-                name: "Lip serum 24PCS",
-                price: "R329",
-                originalPrice: "R380",
-                saleAmount: "11%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R329 for 24 pieces (R13.71 per piece). Recommended Selling Price: Sell each piece at R25. Total Revenue: 24 pieces x R25 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 24 pieces at R25 each",
-                image: "/Screenshot_20250204_224959_Gallery.jpg"
-            },
-             {
-                id: 22,
-                name: "Flavoured lipgloss 24PCS",
-                price: "R429",
-                originalPrice: "R480",
-                saleAmount: "11%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R411. This means you can make a profit of R411 by selling all 24 pieces at R35 each.",
-                image: "/Screenshot_20250204_225110_Gallery.jpg"
-            },
-             {
-                id: 23,
-                name: "Aloe Vera lipoil 24PCS",
-                price: "R429",
-                originalPrice: "R480",
-                saleAmount: "11%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R411. This means you can make a profit of R411 by selling all 24 pieces at R35 each.",
-                 image: "/IMG-20250130-WA0005.jpg"
-           },
-            {
-                id: 24,
-                name: "200ml Body glow oil 10PCS",
-                price: "R699",
-                originalPrice: "R800",
-                saleAmount: "13%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R699 for 10 pieces (R69.90 per piece). Recommended Selling Price: Sell each piece at R120. Total Revenue: 10 pieces x R120 = R1200. Profit: R1200 - R699 = R501. This means you can make a profit of R501 by selling all 10 pieces at R120 each",
-                image: "/Untitled design_20250204_184916_0000.png"
-            },
-            {
-                id: 25,
-                name: "Flask set 5PCS",
-                price: "R439",
-                originalPrice: "R500",
-                saleAmount: "13%",
-                description: "Here's how you can turn this into a great profit: Cost Price: R439 for 5 pieces (R87.80 per piece). Recommended Selling Price: Sell each piece at R150. Total Revenue: 5 pieces x R150 = R750. Profit: R750 - R439 = R311. This means you can make a profit of R311 by selling all 5 pieces at R150 each",
-                image: "/Screenshot_20250204_135340_WhatsApp.jpg"
-            },
-            {
-                id: 26,
-                name: "Installation kits",
-                price: "R449",
-                originalPrice: "R550",
-                saleAmount: "19%",
-                description: "",
-                image: "/d6ffd61439744d31b6e9519060e31c85.jpg"
-            },
-            {
-                 id: 27,
-                 name: "Oil perfumes 6PCS",
-                 price: "R249",
-                 originalPrice: "R300",
-                 saleAmount: "16%",
-                description: "",
-                image: "/images (27).jpeg"
-            },
-            {
-                id: 28,
-               name: "Lipmask 24PCS",
-               price: "R229",
-               originalPrice: "R300",
-               saleAmount: "23%",
-               description: "Here's how you can make some good profit: Cost Price: R229 for 24 pieces (R9.54 per piece). Recommended Selling Price: Sell each piece at R20. Total Revenue: 24 pieces x R20 = R480. Profit: R480 - R229 = R251. This means you can make a profit of R251 by selling all 24 pieces at R20 each. ",
-               image: "/IMG-20250130-WA0016.jpg"
-            },
-            {
-               id: 29,
-               name: "Lustre lipoil 24PCS",
-               price: "R229",
-               originalPrice: "R300",
-               saleAmount: "23%",
-               description: "Here's how you can make some good profit: Cost Price: R229 for 24 pieces (R9.54 per piece). Recommended Selling Price: Sell each piece at R20. Total Revenue: 24 pieces x R20 = R480. Profit: R480 - R229 = R251. This means you can make a profit of R251 by selling all 24 pieces at R20 each",
-               image: "/Screenshot_20250204_200144_Google.jpg"
-            },
-            {
-               id: 30,
-               name: "Hand cream 10PCS",
-               price: "R329",
-               originalPrice: "R400",
-               saleAmount: "18%",
-               description: "Here's how you can make some good profit: Cost Price: R329 for 10 pieces (R32.90 per piece). Recommended Selling Price: Sell each piece at R60. Total Revenue: 10 pieces x R60 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 10 pieces at R60 each",
-               image: "/Screenshot_20250204_163932_Google.jpg"
-            },
-            {
-               id: 31,
-               name: "250ml Body mist 5PCS",
-               price: "R399",
-               originalPrice: "R450",
-               saleAmount: "12%",
-               description: "Here's how you can make some good profit: Cost Price: R399 for 5 pieces (R79.80 per piece). Recommended Selling Price: Sell each piece at R150. Total Revenue: 5 pieces x R150 = R750. Profit: R750 - R399 = R351. This means you can make a profit of R351 by selling all 5 pieces at R150 each",
-               image: "/IMG-20250201-WA0000.jpg"
-},
-{
-  id: 32,
-  name: "500ml Body Scrubs ",
-  price: "R749",
-  originalPrice: "R850",
-  saleAmount: "7%",
-  description: "Here's how you can make some good profit: Cost Price: R750 for 10 pieces (R75 per piece). Recommended Selling Price: Sell each piece at R130. Total Revenue: 10 pieces x R130 = R1300. Profit: R1300 - R750 = R550. This means you can make a profit of R500 by selling all 5 pieces at R150 each",
-  image: "/Screenshot_20250204_224042_Google.jpg"
-},
-{
-  id: 33,
-  name: "Tumeric Soap 10PCS",
-  price: "R279",
-  originalPrice: "R350",
-  saleAmount: "20%",
-  description: "",
-  image: "/glam-products-7.jpg"
-},
-{
-  id: 34,
-  name: "Face Mask 10PCS",
-  price: "R139",
-  originalPrice: "R180",
-  saleAmount: "20%",
-  description: "",
-  image: "/IMG-20250203-WA0006.jpg"
-},
+        let products = [
+              {
+    id: 19,
+    name: "Aloe lipgloss 24PCS",
+    price: "R329",
+    originalPrice: "R380",
+    saleAmount: "14%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R329 for 24 pieces (R13.71 per piece). Recommended Selling Price: Sell each piece at R25(minimum). Total Revenue: 24 pieces x R25 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 24 pieces at R25 each. ",
+    image: "/Screenshot_20250204_193801_Samsung Internet.jpg"
+  },
+  {
+    id: 20,
+    name: "Aimond Oil 24PCS",
+    price: "R429",
+    originalPrice: "R480",
+    saleAmount: "11%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R420",
+    image: "/Screenshot_20250204_225007_Gallery.jpg"
+  },
+  {
+    id: 21,
+    name: "Lip serum 24PCS",
+    price: "R329",
+    originalPrice: "R380",
+    saleAmount: "11%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R329 for 24 pieces (R13.71 per piece). Recommended Selling Price: Sell each piece at R25. Total Revenue: 24 pieces x R25 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 24 pieces at R25 each",
+    image: "/Screenshot_20250204_224959_Gallery.jpg"
+  },
+  {
+    id: 22,
+    name: "Flavoured lipgloss 24PCS",
+    price: "R429",
+    originalPrice: "R480",
+    saleAmount: "11%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R411. This means you can make a profit of R411 by selling all 24 pieces at R35 each.",
+    image: "/Screenshot_20250204_225110_Gallery.jpg"
+  },
+  {
+    id: 23,
+    name: "Aloe Vera lipoil 24PCS",
+    price: "R429",
+    originalPrice: "R480",
+    saleAmount: "11%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R429 for 24 pieces (R17.88 per piece). Recommended Selling Price: Sell each piece at R35. Total Revenue: 24 pieces x R35 = R840. Profit: R840 - R429 = R411. This means you can make a profit of R411 by selling all 24 pieces at R35 each.",
+    image: "/IMG-20250130-WA0005.jpg"
+  },
+  {
+    id: 24,
+    name: "200ml Body glow oil 10PCS",
+    price: "R699",
+    originalPrice: "R800",
+    saleAmount: "13%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R699 for 10 pieces (R69.90 per piece). Recommended Selling Price: Sell each piece at R120. Total Revenue: 10 pieces x R120 = R1200. Profit: R1200 - R699 = R501. This means you can make a profit of R501 by selling all 10 pieces at R120 each",
+    image: "/Untitled design_20250204_184916_0000.png"
+  },
+  {
+    id: 25,
+    name: "Flask set 5PCS",
+    price: "R439",
+    originalPrice: "R500",
+    saleAmount: "13%",
+    description: "Here's how you can turn this into a great profit: Cost Price: R439 for 5 pieces (R87.80 per piece). Recommended Selling Price: Sell each piece at R150. Total Revenue: 5 pieces x R150 = R750. Profit: R750 - R439 = R311. This means you can make a profit of R311 by selling all 5 pieces at R150 each",
+    image: "/Screenshot_20250204_135340_WhatsApp.jpg"
+  },
+  {
+    id: 26,
+    name: "Installation kits",
+    price: "R449",
+    originalPrice: "R550",
+    saleAmount: "19%",
+    description: "",
+    image: "/d6ffd61439744d31b6e9519060e31c85.jpg"
+  },
+  {
+    id: 27,
+    name: "Oil perfumes 6PCS",
+    price: "R249",
+    originalPrice: "R300",
+    saleAmount: "16%",
+    description: "",
+    image: "/images (27).jpeg"
+  },
+  {
+    id: 28,
+    name: "Lipmask 24PCS",
+    price: "R229",
+    originalPrice: "R300",
+    saleAmount: "23%",
+    description: "Here's how you can make some good profit: Cost Price: R229 for 24 pieces (R9.54 per piece). Recommended Selling Price: Sell each piece at R20. Total Revenue: 24 pieces x R20 = R480. Profit: R480 - R229 = R251. This means you can make a profit of R251 by selling all 24 pieces at R20 each. ",
+    image: "/IMG-20250130-WA0016.jpg"
+  },
+  {
+    id: 29,
+    name: "Lustre lipoil 24PCS",
+    price: "R229",
+    originalPrice: "R300",
+    saleAmount: "23%",
+    description: "Here's how you can make some good profit: Cost Price: R229 for 24 pieces (R9.54 per piece). Recommended Selling Price: Sell each piece at R20. Total Revenue: 24 pieces x R20 = R480. Profit: R480 - R229 = R251. This means you can make a profit of R251 by selling all 24 pieces at R20 each",
+    image: "/Screenshot_20250204_200144_Google.jpg"
+  },
+  {
+    id: 30,
+    name: "Hand cream 10PCS",
+    price: "R329",
+    originalPrice: "R400",
+    saleAmount: "18%",
+    description: "Here's how you can make some good profit: Cost Price: R329 for 10 pieces (R32.90 per piece). Recommended Selling Price: Sell each piece at R60. Total Revenue: 10 pieces x R60 = R600. Profit: R600 - R329 = R271. This means you can make a profit of R271 by selling all 10 pieces at R60 each",
+    image: "/Screenshot_20250204_163932_Google.jpg"
+  },
+  {
+    id: 31,
+    name: "250ml Body mist 5PCS",
+    price: "R399",
+    originalPrice: "R450",
+    saleAmount: "12%",
+    description: "Here's how you can make some good profit: Cost Price: R399 for 5 pieces (R79.80 per piece). Recommended Selling Price: Sell each piece at R150. Total Revenue: 5 pieces x R150 = R750. Profit: R750 - R399 = R351. This means you can make a profit of R351 by selling all 5 pieces at R150 each",
+    image: "/IMG-20250201-WA0000.jpg"
+  },
+  {
+    id: 32,
+    name: "500ml Body Scrubs ",
+    price: "R749",
+    originalPrice: "R850",
+    saleAmount: "7%",
+    description: "Here's how you can make some good profit: Cost Price: R750 for 10 pieces (R75 per piece). Recommended Selling Price: Sell each piece at R130. Total Revenue: 10 pieces x R130 = R1300. Profit: R1300 - R750 = R550. This means you can make a profit of R500 by selling all 5 pieces at R150 each",
+    image: "/Screenshot_20250204_224042_Google.jpg"
+  },
+  {
+    id: 33,
+    name: "Tumeric Soap 10PCS",
+    price: "R279",
+    originalPrice: "R350",
+    saleAmount: "20%",
+    description: "",
+    image: "/glam-products-7.jpg"
+  },
+  {
+    id: 34,
+    name: "Face Mask 10PCS",
+    price: "R139",
+    originalPrice: "R180",
+    saleAmount: "20%",
+    description: "",
+    image: "/IMG-20250203-WA0006.jpg"
+  },
         ];
 
         // Pagination settings
         const itemsPerPage = 17;
         let currentPage = 1;
 
-        function displayProducts(page) {
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let deliveryFee = 0;
+
+        function displayProducts(page, productsToDisplay = products) {
             const startIndex = (page - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
-            const paginatedProducts = products.slice(startIndex, endIndex);
+            const paginatedProducts = productsToDisplay.slice(startIndex, endIndex);
 
             const productGrid = document.getElementById('productGrid');
             productGrid.innerHTML = paginatedProducts.map(product => `
@@ -622,8 +778,8 @@
             `).join('');
         }
 
-        function setupPagination() {
-            const pageCount = Math.ceil(products.length / itemsPerPage);
+        function setupPagination(productsToDisplay = products) {
+            const pageCount = Math.ceil(productsToDisplay.length / itemsPerPage);
             const pagination = document.getElementById('pagination');
             
             pagination.innerHTML = Array.from({length: pageCount}, (_, i) => `
@@ -668,10 +824,9 @@
         // Initial load
         displayProducts(currentPage);
         setupPagination();
+        updateCartDisplay();
 
         // Cart functionality
-        let cart = [];
-
         function addToCart(event, productId) {
             event.preventDefault();
             const form = event.target.closest('form');
@@ -697,30 +852,59 @@
                 });
             }
 
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateCartDisplay();
         }
 
         function updateCartDisplay() {
             const cartItems = document.getElementById('cartItems');
+            const cartSubtotal = document.getElementById('cartSubtotal');
             const cartTotal = document.getElementById('cartTotal');
-            
-            cartItems.innerHTML = cart.length > 0 
-                ? cart.map(item => `
-                    <div class="cart-item" style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: cover;">
+            const cartCount = document.getElementById('cartCount');
+
+            cartItems.innerHTML = cart.length > 0 ?
+                cart.map(item => `
+                    <div class="cart-item">
+                        <div>
+                            <img src="${item.image}" alt="${item.name}">
                             <span>${item.name}</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <span>${item.quantity} x R${item.price.toFixed(2)}</span>
-                            <span>R${(item.quantity * item.price).toFixed(2)}</span>
+                        <div class="qty-adjuster">
+                            <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">−</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">+</button>
                         </div>
+                        <span>R${(item.quantity * item.price).toFixed(2)}</span>
                     </div>
-                `).join('')
-                : '<p>Your cart is empty</p>';
+                `).join('') :
+                '<p>Your cart is empty</p>';
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `R${total.toFixed(2)}`;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartSubtotal.textContent = `R${subtotal.toFixed(2)}`;
+            cartTotal.textContent = `R${(subtotal + deliveryFee).toFixed(2)}`;
+            cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function updateCartItemQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (newQuantity <= 0) {
+                    cart = cart.filter(item => item.id !== productId);
+                } else {
+                    item.quantity = newQuantity;
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+            }
+        }
+
+        // Update total with delivery fee
+        function updateTotal() {
+            const selectedDelivery = document.querySelector('input[name="delivery"]:checked');
+            if (selectedDelivery) {
+                deliveryFee = parseFloat(selectedDelivery.value);
+                updateCartDisplay();
+            }
         }
 
         // WhatsApp integration
@@ -730,22 +914,34 @@
                 return;
             }
 
-            const message = cart.map(item => 
-                `*${item.name}*%0A` +
-                `Quantity: ${item.quantity}%0A` +
-                `Price: R${item.price.toFixed(2)} each%0A` +
-                `Total: R${(item.quantity * item.price).toFixed(2)}%0A%0A`
+            const selectedDelivery = document.querySelector('input[name="delivery"]:checked');
+            if (!selectedDelivery) {
+                alert('Please select a delivery option!');
+                return;
+            }
+
+            const message = cart.map(item =>
+                `*${item.name}*\n` +
+                `Quantity: ${item.quantity}\n` +
+                `Price: R${item.price.toFixed(2)} each\n` +
+                `Total: R${(item.quantity * item.price).toFixed(2)}\n\n`
             ).join('');
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const whatsappMessage = encodeURIComponent(
-                `Hello Destine Plug!%0A%0A` +
-                `I would like to order:%0A%0A${message}` +
-                `*Grand Total: R${total.toFixed(2)}*%0A%0A` +
-                `Please confirm my order. Thank you!`
-            );
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + deliveryFee;
+            const deliveryOption = selectedDelivery.value === "60" ? "7-9 days via Paxi" : "3-5 days via Paxi";
 
-            window.open(`https://wa.me/27674539254?text=${whatsappMessage}`, '_blank');
+            const whatsappMessage = 
+                `Hello Destine Plug!\n\n` +
+                `I would like to order:\n\n${message}` +
+                `*Delivery Option: ${deliveryOption}*\n` +
+                `*Subtotal: R${subtotal.toFixed(2)}*\n` +
+                `*Delivery Fee: R${deliveryFee.toFixed(2)}*\n` +
+                `*Grand Total: R${total.toFixed(2)}*\n\n` +
+                `Please confirm my order. Thank you!`;
+
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            window.open(`https://wa.me/27674539254?text=${encodedMessage}`, '_blank');
         });
 
         // Add quantity adjuster functionality
@@ -754,12 +950,44 @@
                 const input = e.target.parentElement.querySelector('.qty-adjuster__value');
                 input.value = Math.max(1, parseInt(input.value) - 1);
             }
-            
+
             if (e.target.classList.contains('qty-adjuster__up')) {
                 const input = e.target.parentElement.querySelector('.qty-adjuster__value');
                 input.value = parseInt(input.value) + 1;
             }
         });
+
+        // Sorting functionality
+        function sortProducts() {
+            const sortFilter = document.getElementById('sortFilter').value;
+            let sortedProducts = [...products];
+
+            if (sortFilter === 'lowToHigh') {
+                sortedProducts.sort((a, b) => parseFloat(a.price.replace(/[^0-9.]/g, '')) - parseFloat(b.price.replace(/[^0-9.]/g, '')));
+            } else if (sortFilter === 'highToLow') {
+                sortedProducts.sort((a, b) => parseFloat(b.price.replace(/[^0-9.]/g, '')) - parseFloat(a.price.replace(/[^0-9.]/g, '')));
+            }
+
+            // Update the displayed products
+            products = sortedProducts;
+            displayProducts(currentPage);
+        }
+
+        // Toggle cart dropdown
+        function toggleCartDropdown() {
+            const cartDropdown = document.getElementById('cartDropdown');
+            cartDropdown.classList.toggle('active');
+        }
+
+        // Search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm)
+            );
+            displayProducts(1, filteredProducts);
+            setupPagination(filteredProducts);
+        }
     </script>
 </body>
 </html>
