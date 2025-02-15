@@ -944,10 +944,10 @@
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const whatsappMessage = 
-                `Hello Destine Plug!\n\n` +
+                `Hello Destine\n\n` +
                 `I would like to order:\n\n${message}` +
                 `*Grand Total: R${total.toFixed(2)}*\n\n` +
-                `Please confirm my order. Thank you!`;
+                `Please confirm my order and send banking details for payment Thank you!`;
 
             const encodedMessage = encodeURIComponent(whatsappMessage);
             window.open(`https://wa.me/27674539254?text=${encodedMessage}`, '_blank');
