@@ -941,13 +941,13 @@
             const deliveryOption = selectedDelivery.value === "60" ? "7-9 days via Paxi" : "3-5 days via Paxi";
 
             const whatsappMessage = 
-                `Hello Destine Plug!\n\n` +
+                `Hello Destine\n\n` +
                 `I would like to order:\n\n${message}` +
                 `*Delivery Option: ${deliveryOption}*\n` +
                 `*Subtotal: R${subtotal.toFixed(2)}*\n` +
                 `*Delivery Fee: R${deliveryFee.toFixed(2)}*\n` +
                 `*Grand Total: R${total.toFixed(2)}*\n\n` +
-                `Please confirm my order. Thank you!`;
+                `Please confirm my order and send banking details for payment Thank you!`;
 
             const encodedMessage = encodeURIComponent(whatsappMessage);
             window.open(`https://wa.me/27674539254?text=${encodedMessage}`, '_blank');
