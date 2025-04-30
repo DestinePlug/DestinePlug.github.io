@@ -489,6 +489,20 @@
         #sendToWhatsApp:hover {
             background: #1da851;
         }
+
+        /* Delivery Options */
+        .delivery-options {
+            margin-top: 15px;
+        }
+
+        .delivery-options label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .delivery-options input[type="radio"] {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -516,6 +530,28 @@
     <div class="cart-dropdown" id="cartDropdown">
         <h2>Your Cart</h2>
         <div id="cartItems" style="margin: 15px 0;"></div>
+        <p><strong>Subtotal: </strong><span id="cartSubtotal">R0</span></p>
+        
+        <!-- Delivery Options -->
+        <div class="delivery-options">
+           <label>
+   <input type="radio" name="delivery" value="20" onchange="updateTotal()">
+   R20 - local Phalaborwa (Same or Next day)
+ </label>
+  <label>
+   <input type="radio" name="delivery" value="40" onchange="updateTotal()">
+   R40 - Town Phalaborwa (Same or Next day)
+ </label>
+            <label>
+                <input type="radio" name="delivery" value="60" onchange="updateTotal()">
+                R49 - 7-9 days via Paxi
+            </label>
+            <label>
+                <input type="radio" name="delivery" value="100" onchange="updateTotal()">
+                R99 - 3-5 days via Paxi
+            </label>
+        </div>
+
         <p><strong>Total: </strong><span id="cartTotal">R0</span></p>
         <button id="sendToWhatsApp" class="btn">
             Send Order via WhatsApp
@@ -549,20 +585,29 @@
     <script>
         // Actual product data with unique names, prices, descriptions, and images
         let products = [
-   {
+    {
      id: 48,
      name: "VILLA 10PCS X 30ML ",
      price: "R600",
      originalPrice: "",
      saleAmount: "",
-     description: "We choose for you from our best selling Villa perfumes and we most send two of each perfume (2 x 5 perfumes ) ",
+     description: "For resellers only, We will choose any 10 from our best selling Villa perfumes ",
      image: "/VILLAS.jpg"
    },
+    {
+     id: 32,
+     name: "Any Villa perfume + Tissue Oil",
+     price: "R169",
+     originalPrice: "R189",
+     saleAmount: "20%",
+     description: "",
+     image: "/Perfume+Tissue.png"
+ },
      {
     id: 25,
-    name: "Lipgloss 10PCS",
-    price: "R129",
-    originalPrice: "R200",
+    name: "Lipgloss 3PCS",
+    price: "R45",
+    originalPrice: "R70",
     saleAmount: "33%",
     description: "Available in six different flavours strawberry,cherry,lemon,grape and honey peach",
     image: "/8AA908AB-8054-4327-866B-93875F54706F.png"
@@ -573,15 +618,15 @@
    price: "R700",
    originalPrice: "",
    saleAmount: "",
-   description: "We choose for you from our best selling Villa perfumes and we most send two of each perfume (2 x 5 perfumes ) plus 5ml testers",
+   description: "For resellers only, We will choose any 10 from our best selling Villa perfumes",
    image: "/VILLAS.jpg"
  },
          
             {
                 id: 3,
                 name: "B man 40ml",
-                price: "R99",
-                originalPrice: "R120",
+                price: "OUT OF STOCK",
+                originalPrice: "",
                 saleAmount: "20%",
                 description: "B Edition Man is a woody aromatic fragrance for men that is energising and vibrant.The perfume delivers a hit of fresh, crisp green apple, twisted with vibrant aromatic lavender notes in the heart, and the smoky, earthy scents of fir balsam with fresh pine notes beaming through in the base.A fresh fragrance for adventurous individuals.",
                 image: "/40ml-BEditionMan-Bottle.jpg"
@@ -630,6 +675,15 @@
    saleAmount: "20%",
    description: "",
    image: "/Blue V.jpg"
+ },
+  {
+   id: 32,
+   name: "Irresistible Amber 30ml",
+   price: "R99",
+   originalPrice: "R120",
+   saleAmount: "20%",
+   description: "",
+   image: "/Black V.jpg"
  },
  {
    id: 33,
@@ -685,6 +739,15 @@
     description: "",
     image: "/Blue V.jpg"
   },
+    {
+    id: 38,
+    name: "Baccarat Rouge 30ml",
+    price: "R99",
+    originalPrice: "R120",
+    saleAmount: "20%",
+    description: "",
+    image: "/Black V.jpg"
+  },
   {
     id: 39,
     name: "JPG Scandal 30ml",
@@ -692,8 +755,17 @@
     originalPrice: "R120",
     saleAmount: "20%",
     description: "",
-    image: "/Black V.jpg"
+    image: "/Blue V.jpg"
   },
+   {
+     id: 39,
+     name: "JPG Scandal 30ml ",
+     price: "R99",
+     originalPrice: "R120",
+     saleAmount: "20%",
+     description: "",
+     image: "/Black V.jpg"
+ },
   {
     id: 40,
     name: "Eternal Allure 30ml",
@@ -712,6 +784,15 @@
     description: "",
     image: "/Blue V.jpg"
   },
+   {
+     id: 41,
+     name: "Paco Rabanne – Invictus 30ml",
+     price: "R99",
+     originalPrice: "R120",
+     saleAmount: "20%",
+     description: "",
+     image: "/Black V.jpg"
+ },
   {
     id: 42,
     name: "Paco Rabanne – Olympea 30ml",
@@ -756,7 +837,42 @@
      saleAmount: "20%",
      description: "",
      image: "/Black V.jpg"
-   },
+   },{
+    id: 47,
+    name: "Lady Million Tissue Oil 125ml",
+    price: "R89",
+    originalPrice: "R120",
+    saleAmount: "30%",
+    description: "",
+    image: "/lady-million-Tissue-oil.jpeg"
+},
+{
+    id: 51,
+    name: "Armani SI Tissue Oil 125ml",
+    price: "R89",
+    originalPrice: "R120",
+    saleAmount: "30%",
+    description: "",
+    image: "/Armani-Si-Tissue-oil.jpeg"
+},
+{
+    id: 49,
+    name: "Olympea Tissue Oil 125ml",
+    price: "R89",
+    originalPrice: "R120",
+    saleAmount: "30%",
+    description: "",
+    image: "/olymp-tissue-oil.jpeg"
+},
+{
+    id: 50,
+    name: "Baccarat Rouge Tissue Oil 125ml",
+    price: "R89",
+    originalPrice: "R120",
+    saleAmount: "30%",
+    description: "",
+    image: "/rouge-Tissue-oil.jpeg"
+},
             {
                 id: 5,
                 name: "Flawless 40ml",
@@ -922,11 +1038,12 @@
         ];
 
         // Pagination settings
-        const itemsPerPage = 50;
+        const itemsPerPage = 100;
         let currentPage = 1;
 
         // Cart functionality
-        let cart = [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let deliveryFee = 0;
 
         function displayProducts(page, productsToDisplay = products) {
             const startIndex = (page - 1) * itemsPerPage;
@@ -1058,11 +1175,13 @@
                 });
             }
 
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateCartDisplay();
         }
 
         function updateCartDisplay() {
             const cartItems = document.getElementById('cartItems');
+            const cartSubtotal = document.getElementById('cartSubtotal');
             const cartTotal = document.getElementById('cartTotal');
             const cartCount = document.getElementById('cartCount');
 
@@ -1083,8 +1202,9 @@
                 `).join('') :
                 '<p>Your cart is empty</p>';
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = `R${total.toFixed(2)}`;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartSubtotal.textContent = `R${subtotal.toFixed(2)}`;
+            cartTotal.textContent = `R${(subtotal + deliveryFee).toFixed(2)}`;
             cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
         }
 
@@ -1096,6 +1216,16 @@
                 } else {
                     item.quantity = newQuantity;
                 }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+            }
+        }
+
+        // Update total with delivery fee
+        function updateTotal() {
+            const selectedDelivery = document.querySelector('input[name="delivery"]:checked');
+            if (selectedDelivery) {
+                deliveryFee = parseFloat(selectedDelivery.value);
                 updateCartDisplay();
             }
         }
@@ -1107,6 +1237,12 @@
                 return;
             }
 
+            const selectedDelivery = document.querySelector('input[name="delivery"]:checked');
+            if (!selectedDelivery) {
+                alert('Please select a delivery option!');
+                return;
+            }
+
             const message = cart.map(item =>
                 `*${item.name}*\n` +
                 `Quantity: ${item.quantity}\n` +
@@ -1114,10 +1250,16 @@
                 `Total: R${(item.quantity * item.price).toFixed(2)}\n\n`
             ).join('');
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + deliveryFee;
+            const deliveryOption = selectedDelivery.value === "60" ? "7-9 days via Paxi" : "3-5 days via Paxi";
+
             const whatsappMessage = 
                 `Hello Destine\n\n` +
                 `I would like to order:\n\n${message}` +
+                `*Delivery Option: ${deliveryOption}*\n` +
+                `*Subtotal: R${subtotal.toFixed(2)}*\n` +
+                `*Delivery Fee: R${deliveryFee.toFixed(2)}*\n` +
                 `*Grand Total: R${total.toFixed(2)}*\n\n` +
                 `Please confirm my order and send banking details for payment Thank you!`;
 
